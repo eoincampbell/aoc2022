@@ -4,6 +4,7 @@ using aoc2022.Puzzles;
 var days = new List<Puzzle>
 {
     new Day01(),
+    new Day02(),
 };
 
 
