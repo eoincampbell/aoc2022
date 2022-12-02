@@ -29,13 +29,14 @@
 
         public Day02() : base("Inputs/Day02.txt") { }
 
-        private object Calc(bool first)
+        private object Calc(bool c)
         {
-            var score = 0;
-            foreach (var row in PuzzleInput.Select(x => new string(new[] { x[0], x[2] })))
-                score += first ? _outcomes[row].o1 : _outcomes[row].o2;
-
-            return score;
+            var s = 0;
+            PuzzleInput.Select(x => new string(new[] { x[0], x[2] }))
+                .ToList()
+                .ForEach(f => s += c ? _outcomes[f].o1 : _outcomes[f].o2);
+            return s;
         }
+
     }
 }
