@@ -5,6 +5,7 @@ var days = new List<Puzzle>
 {
     new Day01(),
     new Day02(),
+    new Day03(),
 };
 
 
