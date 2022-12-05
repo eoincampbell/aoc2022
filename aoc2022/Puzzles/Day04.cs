@@ -1,4 +1,8 @@
-﻿namespace aoc2022.Puzzles
+﻿//AOC2022 - Day 04
+//Result 1: 584
+//Result 2: 933
+
+namespace aoc2022.Puzzles
 {
     internal class Day04 : Puzzle
     {
