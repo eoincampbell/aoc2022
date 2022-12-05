@@ -8,101 +8,55 @@ namespace aoc2022.Puzzles
     {
         public override int Day => 5;
         public override string Name => "Supply Stacks";
-        protected override object RunPart1() => RunCrane(true);
-        protected override object RunPart2() => RunCrane(false);
+        protected override object RunPart1() => RunCrane(false);
+        protected override object RunPart2() => RunCrane(true);
         public Day05() : base("Inputs/Day05.txt") { }
 
-        private object RunCrane( bool part1)
+        private object RunCrane(bool isCrateMover9001)
         {
-            var stacks = CreateYard().ToList();
+            var stacks = Enumerable.Range(0,9).Select(_ => new Stack<char>()).ToList();
             LoadStacks(PuzzleInput.Take(8).ToList(), stacks);
-            if (part1)
-            {
-                RunCrateMover9000(PuzzleInput.Skip(10).ToList(), stacks);
-            }
-            else
-            {
-                RunCrateMover9001(PuzzleInput.Skip(10).ToList(), stacks);
-            }
+            RunCrateMover(PuzzleInput.Skip(10), stacks, isCrateMover9001);
             return GetResult(stacks);
         }
 
-        private string GetResult(List<Stack<char>> stacks)
+        private void RunCrateMover(IEnumerable<string> instructions, List<Stack<char>> stacks, bool isCrateMover9001)
         {
-            var r = string.Empty;
-            for (var i = 0; i < stacks.Count; i++)
+            foreach (var (count, src, dest) in instructions.Select(Parse))
             {
-                r += stacks[i].Pop();
-            }
-
-            return r;
-        }
-
-        private void RunCrateMover9000(List<string> instructions, List<Stack<char>> stacks)
-        {
-            foreach (var instruction in instructions)
-            {
-                var (count, src, dest) = Parse(instruction);
-                for (int i = 0; i < count; i++)
+                if (isCrateMover9001)
                 {
-                    var crate = stacks[src].Pop();
-                    stacks[dest].Push(crate);
+                    var crates = new List<char>();
+                    for (var i = 0; i < count; i++)      //pop all crates first
+                        crates.Add(stacks[src].Pop());
+                    for (var i = count - 1; i >= 0; i--) //push them in reverse order
+                        stacks[dest].Push(crates[i]);
+                }
+                else
+                {
+                    for (int i = 0; i < count; i++)     //pop & push crates 1 at a time
+                        stacks[dest].Push(stacks[src].Pop());
                 }
             }
         }
+        private static string GetResult(List<Stack<char>> stacks) =>
+            string.Join("", stacks.Select(i => i.Peek()));
 
-        private void RunCrateMover9001(List<string> instructions, List<Stack<char>> stacks)
-        {
-            foreach (var instruction in instructions)
-            {
-                var (count, src, dest) = Parse(instruction);
-                var crates = new List<char>();
-                for (var i = 0; i < count; i++)
-                {
-                    crates.Add(stacks[src].Pop());
-                }
-                for (var i = count - 1; i >= 0; i--)
-                {
-                    stacks[dest].Push(crates[i]);
-                }
-            }
-        }
-
-        private (int count, int src, int dest) Parse(string instruction)
+        private static (int count, int src, int dest) Parse(string instruction)
         {
             var x = instruction
-                .Replace("move ", "")
-                .Replace(" from ", ",")
-                .Replace(" to ", ",")
-                .Split(',')
-                .Select(int.Parse)
-                .ToArray();
-
+                .Replace("move ", "").Replace(" from ", ",")
+                .Replace(" to ", ",").Split(',')
+                .Select(int.Parse).ToArray();
             return (x[0], --x[1], --x[2]);
-        }
-
-        private static IEnumerable<Stack<char>> CreateYard()
-        {
-            for (var i = 1; i <= 9; i++)
-            {
-                yield return new Stack<char>();
-            }
         }
 
         private static void LoadStacks(List<string> rows, List<Stack<char>> stacks)
         {
-            for (var y = 7; y >= 0; y--) //bottom to top through rows
-            {
-                //stacks go from 0..8
-                //crate letters go from index 1..N in 4's
-                for (int x = 1, s = 0;x <= rows[y].Length; x += 4, s++)
-                {
+            for (var y = 7; y >= 0; y--) //row 7 up to 0                
+                for (int x = 1, s = 0;x <= rows[y].Length; x += 4, s++) //stacks 0..8, crates n+4
                     if (rows[y][x] != ' ')
-                    {
                         stacks[s].Push(rows[y][x]);
-                    }
-                }
-            }
         }
     }
 }
