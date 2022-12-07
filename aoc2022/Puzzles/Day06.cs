@@ -20,7 +20,6 @@ namespace aoc2022.Puzzles
                 if (yy == len) break;
                 i++;
             }
-
             return i+len;
         }
     }
