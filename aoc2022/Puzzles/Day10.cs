@@ -16,32 +16,29 @@ namespace aoc2022.Puzzles
         {
             int cyc = 0, reg = 1;
             var totals = new List<int>();
-            var arr = new char[Row * Col];
-
             foreach (var i in PuzzleInput.Select(s => s.Split(' ')))
             {
-                Cycle(ref cyc, ref reg, ref arr, ref totals); //NOOP is 1 cycle
+                Cycle(ref cyc, reg, totals); //NOOP is 1 cycle
                 if (i[0] != "addx") continue;
-                Cycle(ref cyc, ref reg, ref arr, ref totals); //ADDX is 2nd cycle + reg-add
+                Cycle(ref cyc, reg, totals); //ADDX is 2nd cycle + reg-add
                 reg += int.Parse(i[1]);
             }
-
-            for(int i = 0; i < Row * Col; i++)
-                Console.Write(arr[i] + (((i + 1) % Col == 0) ? Environment.NewLine : ""));
 
             return totals.Sum();
         }
 
-        private static void Cycle (ref int cyc, ref int reg, ref char [] arr, ref List<int> tot)
+        private static void Cycle(ref int cyc, int reg, List<int> tot)
         {
-            Draw(cyc++, reg, ref arr); //Draw & then increment cycle
+            Draw(cyc++, reg); //Draw & then increment cycle
             Check(cyc, reg, tot);
         }
 
-        private static void Draw(int cyc, int reg, ref char[] arr)
+        private static void Draw(int cyc, int reg)
         {
             var mod = cyc % Col;
-            arr[cyc] = (mod == reg || mod == reg - 1 || mod == reg + 1) ? '#' : ' ';
+            var c = (mod == reg || mod == reg - 1 || mod == reg + 1) ? '#' : ' ';
+            Console.Write(c);
+            if (mod == Col - 1) Console.WriteLine();
         }
 
         private static void Check(int cyc, int reg, List<int> tot)
