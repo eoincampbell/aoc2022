@@ -42,13 +42,13 @@ namespace aoc2022.Puzzles
             return hash.Count;
         }
 
-        private static Point UpdateTail(Point head, Point tail) =>
-            new(tail.X + Math.Sign(head.X - tail.X),
+        private static Point UpdateTail(Point head, Point tail) => 
+            new(tail.X + Math.Sign(head.X - tail.X), 
                 tail.Y + Math.Sign(head.Y - tail.Y));
 
         private static bool IsAdjacent(Point head, Point tail) =>
-            Math.Abs(head.X - tail.X) <= 1 
-            && Math.Abs(head.Y - tail.Y) <= 1;
+            Math.Abs(head.X - tail.X) <= 1 &&
+            Math.Abs(head.Y - tail.Y) <= 1;
 
         private static Point UpdateHead(Point head, string dir) =>
             dir switch
