@@ -10,7 +10,6 @@ namespace aoc2022.Puzzles
         protected override object RunPart1() => Part1();
         protected override object RunPart2() => "NO OP";
         public Day10() : base("Inputs/Day10.txt") { }
-        private const int Row = 6;
         private const int Col = 40;
         private object Part1()
         {
@@ -23,27 +22,15 @@ namespace aoc2022.Puzzles
                 Cycle(ref cyc, reg, totals); //ADDX is 2nd cycle + reg-add
                 reg += int.Parse(i[1]);
             }
-
             return totals.Sum();
         }
 
         private static void Cycle(ref int cyc, int reg, List<int> tot)
         {
-            Draw(cyc++, reg); //Draw & then increment cycle
-            Check(cyc, reg, tot);
-        }
-
-        private static void Draw(int cyc, int reg)
-        {
-            var mod = cyc % Col;
-            var c = (mod == reg || mod == reg - 1 || mod == reg + 1) ? '#' : ' ';
-            Console.Write(c);
-            if (mod == Col - 1) Console.WriteLine();
-        }
-
-        private static void Check(int cyc, int reg, List<int> tot)
-        {
-            if (cyc >= 20 && cyc <= (Row * Col) - 20 && (cyc - 20) % Col == 0)
+            Console.Write((cyc % Col == reg - 1 || cyc % Col == reg || cyc % Col == reg + 1) ? '#' : ' ');
+            if (cyc % Col == Col - 1) Console.WriteLine();
+            cyc++;
+            if (cyc >= 20 && cyc <= 220 && (cyc - 20) % Col == 0)
                 tot.Add(cyc * reg);
         }
     }
