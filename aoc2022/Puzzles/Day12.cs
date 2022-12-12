@@ -7,81 +7,72 @@ namespace aoc2022.Puzzles
     {
         public override int Day => 12;
         public override string Name => "";
-        protected override object RunPart1() => Hike('`');
+        protected override object RunPart1() => Hike();
         protected override object RunPart2() => Hike('a');
         public Day12() : base("Inputs/Day12.txt")
         {
             _map = PuzzleInput.To2DArray();
-            _shortest = new int[_map.GetUpperBound(0)+1, _map.GetUpperBound(1)+1];
+            _pth = new int[MapHeight+1, MapWidth+1];
             SetupMap();
         }
-
         private readonly char[,] _map;
-        private readonly int[,] _shortest;
+        private readonly int[,] _pth;
         private int MapWidth => _map.GetUpperBound(1);
         private int MapHeight => _map.GetUpperBound(0);
-
+        private int EndX;
+        private int EndY;
+        private const char Start = '`';
+        private const char End = '{';
         private void SetupMap()
         {
             //hack to do char-math by putting start and end 1 char before
             //and after 'a' and 'z' respectively.
-            for (int y = 0; y <= MapHeight; y++)
-                for (int x = 0; x <= MapWidth; x++)
+            for (var y = 0; y <= MapHeight; y++)
+                for (var x = 0; x <= MapWidth; x++)
                     if (_map[y, x] == 'S')
-                        _map[y, x] = '`'; 
+                        _map[y, x] = Start;
                     else if (_map[y, x] == 'E')
-                        _map[y, x] = '{'; 
+                    {
+                        _map[y, x] = End;
+                        EndY = y; EndX = x;
+                    }
         }
 
-        private void ResetShortest()
+        private void ResetShortestPath()
         {
-            for (int i = 0; i <= _map.GetUpperBound(0); i++)
-                for (int j = 0; j <= _map.GetUpperBound(1); j++)
-                    _shortest[i, j] = int.MaxValue;
+            for (var y = 0; y <= _map.GetUpperBound(0); y++)
+                for (var x = 0; x <= _map.GetUpperBound(1); x++)
+                    _pth[y, x] = int.MaxValue;
         }
 
-        private object Hike(char start)
+        private object Hike(char start = Start)
         {
-            ResetShortest();
-            for (int y = 0; y <= MapHeight; y++)
-                for (int x = 0; x <= MapWidth; x++)
+            ResetShortestPath();
+            for (var y = 0; y <= MapHeight; y++)
+                for (var x = 0; x <= MapWidth; x++)
                     if (_map[y, x] == start)
                         Traverse(x, y, 0);
 
-            for (int y = 0; y <= MapHeight; y++)
-                for (int x = 0; x <= MapWidth; x++)
-                    if (_map[y, x] == '{')
-                        return _shortest[y, x];
-
-            return -1;
+            return _pth[EndY, EndX];
         }
 
-        private bool NextStepInbounds(int x, int y) =>
+        private bool Inbounds(int x, int y) =>
             x >= 0 && y >= 0 && x <= MapWidth && y <= MapHeight;
 
-        private bool NextStepValid(int cx, int cy, int tx, int ty, int count) =>
-            NextStepInbounds(tx, ty)                    //target must be inbounds 
+        private bool Valid(int cx, int cy, int tx, int ty, int count) =>
+            Inbounds(tx, ty)                    //target must be inbounds 
             && _map[ty, tx] - _map[cy, cx] <= 1 //target must be at most 1 higher than current
-            && _shortest[ty, tx] > count;       //target isn't further than a prev. visit
-
+            && _pth[ty, tx] > count;       //target isn't further than a prev. visit
 
         private void Traverse(int x, int y, int count)
         {
-            _shortest[y, x] = (_shortest[y, x] > count) ? count : _shortest[y, x];
+            _pth[y, x] = (_pth[y, x] > count) ? count : _pth[y, x];
             count++;
-            if (_map[y, x] == '{') return;
-
-            if (NextStepValid(x, y, x, y + 1, count)) //down
-                Traverse(x, y + 1, count);
-
-            if (NextStepValid(x, y, x - 1, y, count)) //left
-                Traverse(x - 1, y, count);
-
-            if (NextStepValid(x, y, x + 1, y, count)) //right
-                Traverse(x + 1, y, count);
-
-            if (NextStepValid(x, y, x, y - 1, count)) //up
-                Traverse(x, y - 1, count);
+            if (_map[y, x] == End) return;
+            if (Valid(x, y, x, y - 1, count)) Traverse(x, y - 1, count);//north
+            if (Valid(x, y, x, y + 1, count)) Traverse(x, y + 1, count);//south
+            if (Valid(x, y, x - 1, y, count)) Traverse(x - 1, y, count);//west
+            if (Valid(x, y, x + 1, y, count)) Traverse(x + 1, y, count);//east
         }
     }
 }
