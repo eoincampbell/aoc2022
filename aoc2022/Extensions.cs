@@ -94,33 +94,5 @@ namespace aoc2022
                 }
             }
         }
-
-        public static void Print(this HashSet<Point> hash, Point[] rope)
-        {
-            int top = hash.Max(p => p.Y), bot = hash.Min(p => p.Y),
-                lef = hash.Min(p => p.X), rig = hash.Max(p => p.X);
-            for (var y = top + 3; y >= bot - 3; y--)
-            {
-                for (var x = lef - 3; x <= rig + 3; x++)
-                {
-                    var p = new Point(x, y);
-                    var idx = Array.IndexOf(rope, p);
-                    if (rope.Contains(p) && idx == 0)
-                        Console.Write("H");
-                    else if (rope.Contains(p) && idx == rope.Length - 1)
-                        Console.Write("T");
-                    else if (rope.Contains(p))
-                        Console.Write(idx);
-                    else if (x == 0 && y == 0)
-                        Console.Write('s');
-                    else if (hash.Contains(p))
-                        Console.Write('#');
-                    else
-                        Console.Write('.');
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine("-----------------------------------");
-        }
     }
 }

@@ -76,7 +76,7 @@ namespace aoc2022.Puzzles
 
     public enum OpType { Add, Multiply, Square }
 
-    public record Monkey(int Name, List<long> Items, OpType Type, long OperationValue, long Test, int TrueTarget, int FalseTarget)
+    internal record Monkey(int Name, List<long> Items, OpType Type, long OperationValue, long Test, int TrueTarget, int FalseTarget)
     {
         public long Inspections { get; set; } = 0;
         public bool Inspect(ref long item, bool part1)
@@ -94,7 +94,7 @@ namespace aoc2022.Puzzles
         }
     }
 
-    public static class Day11Extensions
+    internal static class Day11Extensions
     {
         public static void PrintRound(this List<Monkey> monkeys, int rnd)
         {
