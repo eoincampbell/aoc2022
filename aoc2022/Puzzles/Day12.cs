@@ -6,7 +6,7 @@ namespace aoc2022.Puzzles
     internal class Day12 : Puzzle
     {
         public override int Day => 12;
-        public override string Name => "";
+        public override string Name => "Hill Climbing Algorithm";
         protected override object RunPart1() => Hike();
         protected override object RunPart2() => Hike('a');
         public Day12() : base("Inputs/Day12.txt")
@@ -21,8 +21,8 @@ namespace aoc2022.Puzzles
         private int MapHeight => _map.GetUpperBound(0);
         private int EndX;
         private int EndY;
-        private const char Start = '`';
-        private const char End = '{';
+        private const char Start = '`'; //char('a'-1)
+        private const char End = '{';   //char('z'+1)
         private void SetupMap()
         {
             //hack to do char-math by putting start and end 1 char before
@@ -59,20 +59,20 @@ namespace aoc2022.Puzzles
         private bool Inbounds(int x, int y) =>
             x >= 0 && y >= 0 && x <= MapWidth && y <= MapHeight;
 
-        private bool Valid(int cx, int cy, int tx, int ty, int count) =>
-            Inbounds(tx, ty)                    //target must be inbounds 
-            && _map[ty, tx] - _map[cy, cx] <= 1 //target must be at most 1 higher than current
-            && _pth[ty, tx] > count;       //target isn't further than a prev. visit
+        private bool Valid(int sx, int sy, int dx, int dy, int c) =>
+            Inbounds(dx, dy) &&                 //dest must be inbounds 
+            _map[dy, dx] - _map[sy, sx] <= 1 && //dest is at most 1 higher than src
+            _pth[dy, dx] > c;                   //dest is worse than a prev. visit
 
-        private void Traverse(int x, int y, int count)
+        private void Traverse(int x, int y, int c)
         {
-            _pth[y, x] = (_pth[y, x] > count) ? count : _pth[y, x];
-            count++;
+            _pth[y, x] = (_pth[y, x] > c) ? c : _pth[y, x];
+            c++;
             if (_map[y, x] == End) return;
-            if (Valid(x, y, x, y - 1, count)) Traverse(x, y - 1, count);//north
-            if (Valid(x, y, x, y + 1, count)) Traverse(x, y + 1, count);//south
-            if (Valid(x, y, x - 1, y, count)) Traverse(x - 1, y, count);//west
-            if (Valid(x, y, x + 1, y, count)) Traverse(x + 1, y, count);//east
+            if (Valid(x, y, x, y - 1, c)) Traverse(x, y - 1, c);//north
+            if (Valid(x, y, x, y + 1, c)) Traverse(x, y + 1, c);//south
+            if (Valid(x, y, x - 1, y, c)) Traverse(x - 1, y, c);//west
+            if (Valid(x, y, x + 1, y, c)) Traverse(x + 1, y, c);//east
         }
     }
 }
