@@ -9,9 +9,16 @@
 
   <ItemGroup>
     <PackageReference Include="morelinq" Version="3.3.2" />
+    <PackageReference Include="SuperLinq" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Inputs\Day13Test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day13.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Inputs\Day12Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
