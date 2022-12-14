@@ -4,24 +4,23 @@
 namespace aoc2022.Puzzles
 {
     using MoreLinq;
-    using System.Drawing;
-
     internal class Day14 : Puzzle
     {
         public override int Day => 14;
         public override string Name => "Regolith Reservoir";
         protected override object RunPart1() => PourSand(true);
         protected override object RunPart2() => PourSand(false);
-        private readonly Dictionary<Point, char> _map;
+        private readonly Dictionary<P, char> _map;
         private readonly int _bottomFloor;
         private readonly int _bottomRock;
         private const char SAND = '.';
         private const char ROCK = '▓';
         private static int MN(int a, int b) => Math.Min(a, b);
         private static int MX(int a, int b) => Math.Max(a, b);
+        public record P (int X, int Y);
         public Day14() : base("Inputs/Day14.txt")
         {
-            _map = new Dictionary<Point, char>();
+            _map = new Dictionary<P, char>();
             LoadMap();
             _bottomRock = _map.Max(k => k.Key.Y);
             _bottomFloor = _bottomRock + 2;
@@ -35,7 +34,7 @@ namespace aoc2022.Puzzles
             for (int y = MN(0, miny); y <= _bottomFloor; y++)
             {
                 for (int x = minx; x <= maxx; x++)
-                    Console.Write(_map.ContainsKey(new Point(x, y)) ? _map[new Point(x, y)] : ' ');
+                    Console.Write(_map.ContainsKey(new P(x, y)) ? _map[new P(x, y)] : ' ');
 
                 Console.WriteLine();
             }
@@ -43,25 +42,23 @@ namespace aoc2022.Puzzles
 
         private void LoadMap() =>
             PuzzleInput
-                .ToList()
-                .ForEach(l =>
+                .ToList().ForEach(l =>
                 {
                     l.Split(" -> ")
                     .Select(s => s.Split(',').Select(int.Parse).ToArray())
-                    .Pairwise((a, b) => new { S = new Point(a[0], a[1]), T = new Point(b[0], b[1]) })
-                    .ToList()
-                    .ForEach(f =>
+                    .Pairwise((a, b) => new { S = new P(a[0], a[1]), T = new P(b[0], b[1]) })
+                    .ToList().ForEach(f =>
                     {
                         if (f.S.X == f.T.X) //vertical rocks
                         {
                             for (var y = MN(f.S.Y, f.T.Y); y <= MX(f.S.Y, f.T.Y); y++)
-                                _map.TryAdd(new Point(f.S.X, y), ROCK);
+                                _map.TryAdd(new P(f.S.X, y), ROCK);
                         }
 
                         if (f.S.Y == f.T.Y) //horizontal rocks
                         {
                             for (var x = MN(f.S.X, f.T.X); x <= MX(f.S.X, f.T.X); x++)
-                                _map.TryAdd(new Point(x, f.S.Y), ROCK);
+                                _map.TryAdd(new P(x, f.S.Y), ROCK);
                         }
                     });
                 });
@@ -70,23 +67,23 @@ namespace aoc2022.Puzzles
         {
             while (!stop)
             {
-                var grain = new Point(500, 0);
+                var grain = new P(500, 0);
                 if (_map.ContainsKey(grain)) break; //source blocked
                 while (true)
                 {
-                    var temp = MoveGrain(grain, part1);
+                    var temp = MoveGrain(grain, part1); //try move down
                     if (temp.Y >= _bottomRock && part1) stop = true;
-                    if (temp == grain || stop) break; //sand at rest
+                    if (temp == grain || stop) break; //sand at rest on rock or bottom
                     grain = temp;
                 }
             }
-            PrintMap();
+            //PrintMap();
             return _map.Count(kvp => kvp.Value == SAND);
         }
 
-        private Point MoveGrain(Point curr, bool part1)
+        private P MoveGrain(P curr, bool part1)
         {
-            Point dd = new(curr.X, curr.Y + 1),
+            P dd = new(curr.X, curr.Y + 1),
                 dl = new(curr.X - 1, curr.Y + 1),
                 dr = new(curr.X + 1, curr.Y + 1);
 

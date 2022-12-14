@@ -12,6 +12,6 @@ var days = new List<Puzzle>
     new Day13(),    new Day14()
 };
 
-var current = true;
+var current = false;
 Puzzle.Header.Print();
 (current ? days.OrderByDescending(x => x.Day).Take(1) : days).ToList().ForEach(d => d.Run().Print());
