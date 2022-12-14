@@ -13,7 +13,7 @@ namespace aoc2022.Puzzles
         protected override object RunPart1() => Part1();
         protected override object RunPart2() => Part2();
         private readonly IEnumerable<Packet> _signals;
-        private Packet [] Ord => new Packet[] { Parse("[[2]]"), Parse("[[6]]") };
+        private static Packet [] Ord => new Packet[] { Parse("[[2]]"), Parse("[[6]]") };
         public Day13() : base("Inputs/Day13.txt") =>
             _signals = PuzzleInput
                 .Where(s => !string.IsNullOrEmpty(s))
